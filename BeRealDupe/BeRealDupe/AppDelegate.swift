@@ -1,0 +1,73 @@
+//
+//  AppDelegate.swift
+//  BeRealDupe
+//
+//  Created by Núria Pérez Casas on 3/26/23.
+//
+
+import UIKit
+import ParseSwift
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        // TODO: Pt 1 - Initialize Parse SDK
+        // https://github.com/parse-community/Parse-Swift/blob/main/ParseSwift.playground/Sources/Common.swift
+        ParseSwift.initialize(applicationId: "6Kzxj8F3uYqy3kBucUsVFMqiJ7gcSunFcanggvAY",
+                              clientKey: "PVdJuJwwY2uBiVyUIMyFqXOjsHpqdBeQFaMO5nMl",
+                              serverURL: URL(string: "https://parseapi.back4app.com")!)
+
+        // TODO: Pt 1: - Instantiate and save a test parse object to your server
+        // https://github.com/parse-community/Parse-Swift/blob/3d4bb13acd7496a49b259e541928ad493219d363/ParseSwift.playground/Pages/1%20-%20Your%20first%20Object.xcplaygroundpage/Contents.swift#L121
+        
+        // Save to your server asynchronously (preferred way) - Performs work on background queue and returns to specified callbackQueue.
+        // If no callbackQueue is specified it returns to main queue.
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Weekly Staff Meeting"
+        content.body = "Every Tuesday at 2pm"
+        
+        // Configure the recurring date.
+        var dateComponents = DateComponents()
+        dateComponents.calendar = Calendar.current
+
+        dateComponents.weekday = 2  // Tuesday
+        dateComponents.hour = 14    // 14:00 hours
+        dateComponents.minute = 51
+           
+        // Create the trigger as a repeating event.
+        let trigger = UNCalendarNotificationTrigger(
+                 dateMatching: dateComponents, repeats: true)
+        
+        // Create the request
+        let uuidString = UUID().uuidString
+        let request = UNNotificationRequest(identifier: uuidString,
+                    content: content, trigger: trigger)
+
+        // Schedule the request with the system.
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.add(request) { (error) in
+           if error != nil {
+              // Handle any errors.
+           }
+        }
+
+        return true
+    }
+
+    // MARK: UISceneSession Lifecycle
+
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        // Called when a new scene session is being created.
+        // Use this method to select a configuration to create the new scene with.
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+        // Called when the user discards a scene session.
+        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
+        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    }
+}
